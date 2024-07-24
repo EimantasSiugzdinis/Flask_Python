@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 import os
 import re
 import errno
+from measurements import measurements
+import pprint
 
 app = Flask(__name__)
 LOG_DIR = 'logs' #TODO remove hardcode and add it as args
@@ -114,21 +116,11 @@ def parse_log():
         return jsonify({'error': 'Permission denied to write to the log file'}), 403
     except Exception as e:
         return jsonify({'error': f'An error occurred while writing to the log file: {str(e)}'}), 500
-    
-    #if not os.path.exists(log_file_path):
-     #   return jsonify({'error': 'Log not found'}), 404
-
-    
 
     result = parse_log_contents(log_data)
     return jsonify(result), 200
 
-"""
-Count of ERROR/INFO/MEASUREMENT - done
-Average MEASUREMENT by gas - TODO with classes
-Highest / lowest MEASUREMENT values - by gas? or general? just do both?
-Count of alarms that happened with their exact timestamps - done
-"""
+
 def parse_log_contents(log_data):
     error_count = log_data.count('ERROR')
     info_count = log_data.count('INFO')
@@ -137,12 +129,28 @@ def parse_log_contents(log_data):
     alarms = re.findall(r'\[(.*?)\] WARNING: .*alarm', log_data)
     alarm_count = len(alarms)
 
+    measurements_values = re.findall(r'\[(.*?)\] MEASUREMENT: (\w+) concentration - (\d+\.?\d*)', log_data)
+
+    measurement_obj = measurements()
+
+    for timestamp, gas, value in measurements_values:
+        try:
+            number = float(value)
+        except ValueError:
+            print("Failed to convert the value to an integer.") #how to handle this? Should I print in the response or in logs? now that I write it... I guess we need an error block...
+            continue
+
+        measurement_obj.add_gas(timestamp, gas, number)
+
     return {
         'error_count': error_count,
         'info_count': info_count,
         'measurement_count': measurement_count,
         'alarm_count': alarm_count,
-        'alarms': alarms
+        'alarms': alarms,
+        'measurement averages:': measurement_obj.get_averages(),
+        'measurement highest:': measurement_obj.get_highest_values(),
+        'measurement lowest:': measurement_obj.get_lowest_values()
     }
 
 if __name__ == '__main__':

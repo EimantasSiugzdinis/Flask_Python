@@ -1339,3 +1339,5 @@ env/lib/python3.12/site-packages/werkzeug-3.0.3.dist-info/LICENSE.txt
 env/lib/python3.12/site-packages/werkzeug-3.0.3.dist-info/METADATA
 env/lib/python3.12/site-packages/werkzeug-3.0.3.dist-info/RECORD
 env/lib/python3.12/site-packages/werkzeug-3.0.3.dist-info/WHEEL
+__pycache__/gas.cpython-312.pyc
+__pycache__/measurements.cpython-312.pyc
