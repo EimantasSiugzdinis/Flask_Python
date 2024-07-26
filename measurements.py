@@ -1,6 +1,7 @@
-from gas import gas
+from gas import Gas
 
-class measurements:
+
+class Measurements:
     def __init__(self):
         self.gasses = {}
 
@@ -8,34 +9,28 @@ class measurements:
         if gas_type in self.gasses:
             self.gasses[gas_type].add_value(value)
         else:
-            self.gasses[gas_type] = gas(timestamp, gas_type, value)
-    
-    def get_averages(self):
-        string_to_return = "["
-        for gas_type in self.gasses:
-            string_to_return += f"Average of gas_type: {self.gasses[gas_type].get_gas_type()} is {self.gasses[gas_type].get_average():.2f}"
-            if gas_type != list(self.gasses.keys())[-1]:  # Check if it's not the last item
-                string_to_return += ", "
-        string_to_return += "]"
+            self.gasses[gas_type] = Gas(timestamp, gas_type, value)
 
-        return string_to_return
+    def get_averages(self):
+
+        averages = [
+            f"Average of gas_type: {gas.get_gas_type()} is {gas.get_average():.2f}"
+            for gas in self.gasses.values()
+        ]
+        return f"[{', '.join(averages)}]"
 
     def get_highest_values(self):
-        string_to_return = "["
-        for gas_type in self.gasses:
-            string_to_return += f"Highest value of gas_type: {self.gasses[gas_type].get_gas_type()} is {self.gasses[gas_type].get_max()}"
-            if gas_type != list(self.gasses.keys())[-1]:  # Check if it's not the last item
-                string_to_return += ", "
-        string_to_return += "]"
 
-        return string_to_return
+        highest_values = [
+            f"Highest value of gas_type: {gas.get_gas_type()} is {gas.get_max()}"
+            for gas in self.gasses.values()
+        ]
+        return f"[{', '.join(highest_values)}]"
 
     def get_lowest_values(self):
-        string_to_return = "["
-        for gas_type in self.gasses:
-            string_to_return += f"Highest value of gas_type: {self.gasses[gas_type].get_gas_type()} is {self.gasses[gas_type].get_min()}"
-            if gas_type != list(self.gasses.keys())[-1]:  # Check if it's not the last item
-                string_to_return += ", "
-        string_to_return += "]"
 
-        return string_to_return
+        lowest_values = [
+            f"Lowest value of gas_type: {gas.get_gas_type()} is {gas.get_min()}"
+            for gas in self.gasses.values()
+        ]
+        return f"[{', '.join(lowest_values)}]"
